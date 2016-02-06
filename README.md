@@ -16,11 +16,10 @@ $ export CF_KEY='K9uX2HyUjeWg5AhAb'
 
 ### A note for Python 2
 
-If using Python 2, you need to replace the requirements installation step with the one below.
+If using Python 2, you need to replace the requirements installation step with the one below. Check the [urllib3 documentation](http://urllib3.readthedocs.org/en/latest/security.html#installing-urllib3-with-sni-support-and-certificates) for other possible caveats.
 
 ```
 $ pip install -r hooks/cloudflare/requirements-python-2.txt
-
 ```
 
 ## Usage
