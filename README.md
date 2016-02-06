@@ -13,6 +13,16 @@ $ pip install -r hooks/cloudflare/requirements.txt
 $ export CF_EMAIL='user@example.com'
 $ export CF_KEY='K9uX2HyUjeWg5AhAb'
 ```
+
+### A note for Python 2
+
+If using Python 2, you need to replace the requirements installation step with the one below.
+
+```
+$ pip install -r hooks/cloudflare/requirements-python-2.txt
+
+```
+
 ## Usage
 
 ```
