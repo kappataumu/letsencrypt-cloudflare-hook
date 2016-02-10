@@ -52,4 +52,4 @@ Processing example.com
 ```
 
 ## Further reading
-If you want some prose to go with the code, check out my relevant blog post here: [From StartSSL to Let's Encrypt, using CloudFlare DNS](google.com)
+If you want some prose to go with the code, check out my relevant blog post here: [From StartSSL to Let's Encrypt, using CloudFlare DNS](http://kappataumu.com/articles/letsencrypt-cloudflare-dns-01-hook.html)
