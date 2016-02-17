@@ -97,6 +97,10 @@ def create_txt_record(args):
     record_id = r.json()['result']['id']
     logger.debug("+ TXT record created, ID: {0}".format(record_id))
 
+    # give it 10 seconds to settle down and avoid nxdomain caching
+    logger.info(" + Settling down for 10s...")
+    time.sleep(10)
+
     while(_has_dns_propagated(name, token) == False):
         logger.info(" + DNS not propagated, waiting 30s...")
         time.sleep(30)
