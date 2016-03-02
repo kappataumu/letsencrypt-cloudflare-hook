@@ -25,7 +25,7 @@ $ pip install -r hooks/cloudflare/requirements-python-2.txt
 ## Usage
 
 ```
-$ ./letsencrypt.sh -c -d example.com -t dns-01 -k 'python hooks/cloudflare/hook.py'
+$ ./letsencrypt.sh -c -d example.com -t dns-01 -k 'hooks/cloudflare/hook.py'
 #
 # !! WARNING !! No main config file found, using default config!
 #
