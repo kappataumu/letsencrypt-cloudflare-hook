@@ -40,7 +40,7 @@ except KeyError:
     sys.exit(1)
 
 try:
-    dns_servers = os.environ['CF_DNS_SERVER']
+    dns_servers = os.environ['CF_DNS_SERVERS']
     dns_servers = dns_servers.split()
 except KeyError:
     dns_servers = False
