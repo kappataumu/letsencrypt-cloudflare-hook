@@ -1,6 +1,6 @@
 # CloudFlare hook for letsencrypt.sh ACME client
 
-This a hook for the [Let's Encrypt](https://letsencrypt.org/) ACME client [letsencrypt.sh](https://github.com/lukas2511/letsencrypt.sh), that enables using DNS records on [CloudFlare](https://www.cloudflare.com/) to respond to `dns-01` challenges. Requires Python 3 and your CloudFlare account e-mail and api key being in the environment.
+This a hook for [letsencrypt.sh](https://github.com/lukas2511/letsencrypt.sh) (a [Let's Encrypt](https://letsencrypt.org/) ACME client) that allows you to use [CloudFlare](https://www.cloudflare.com/) DNS records to respond to `dns-01` challenges. Requires Python and your CloudFlare account e-mail and API key being in the environment.
 
 ## Setup
 
@@ -13,6 +13,13 @@ $ pip install -r hooks/cloudflare/requirements.txt
 $ export CF_EMAIL='user@example.com'
 $ export CF_KEY='K9uX2HyUjeWg5AhAb'
 ```
+
+You can also specify one or more custom DNS servers for propagation checking, via the `CF_DNS_SERVERS` environment variable (props [bennettp123](https://github.com/bennettp123)):
+
+```
+export CF_DNS_SERVERS='8.8.8.8 8.8.4.4'
+```
+
 
 ### A note for Python 2
 
@@ -52,4 +59,4 @@ Processing example.com
 ```
 
 ## Further reading
-If you want some prose to go with the code, check out my relevant blog post here: [From StartSSL to Let's Encrypt, using CloudFlare DNS](http://kappataumu.com/articles/letsencrypt-cloudflare-dns-01-hook.html)
+If you want some prose to go with the code, check out my relevant blog post here: [From StartSSL to Let's Encrypt, using CloudFlare DNS](http://kappataumu.com/articles/letsencrypt-cloudflare-dns-01-hook.html).
