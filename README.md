@@ -10,8 +10,8 @@ $ cd letsencrypt.sh
 $ mkdir hooks
 $ git clone https://github.com/kappataumu/letsencrypt-cloudflare-hook hooks/cloudflare
 $ pip install -r hooks/cloudflare/requirements.txt
-$ export CF_EMAIL='user@example.com'
-$ export CF_KEY='K9uX2HyUjeWg5AhAb'
+$ echo "export CF_EMAIL='user@example.com'" >> config.sh
+$ echo "export CF_KEY='K9uX2HyUjeWg5AhAb'" >> config.sh
 ```
 
 You can also specify one or more custom DNS servers for propagation checking, via the `CF_DNS_SERVERS` environment variable (props [bennettp123](https://github.com/bennettp123)):
@@ -34,7 +34,7 @@ $ pip install -r hooks/cloudflare/requirements-python-2.txt
 ```
 $ ./letsencrypt.sh -c -d example.com -t dns-01 -k 'hooks/cloudflare/hook.py'
 #
-# !! WARNING !! No main config file found, using default config!
+# INFO: Using main config file /home/user/letsencrypt.sh/config.sh
 #
 Processing example.com
  + Signing domains...
