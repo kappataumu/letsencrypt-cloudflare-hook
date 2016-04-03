@@ -134,17 +134,20 @@ def delete_txt_record(args):
 
 
 def deploy_cert(args):
-    domain, privkey_pem, cert_pem, fullchain_pem, chain_pem = args
+    domain, privkey_pem, cert_pem, fullchain_pem, chain_pem, timestamp = args
     logger.info(' + ssl_certificate: {0}'.format(fullchain_pem))
     logger.info(' + ssl_certificate_key: {0}'.format(privkey_pem))
     return
 
+def unchanged_cert(args):
+    return
 
 def main(argv):
     ops = {
         'deploy_challenge': create_txt_record,
         'clean_challenge' : delete_txt_record,
         'deploy_cert'     : deploy_cert,
+        'unchanged_cert'  : unchanged_cert,
     }
     logger.info(" + CloudFlare hook executing: {0}".format(argv[0]))
     ops[argv[0]](argv[1:])
