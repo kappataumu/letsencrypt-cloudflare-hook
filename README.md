@@ -1,4 +1,4 @@
-# CloudFlare hook for letsencrypt.sh ACME client
+# CloudFlare hook for `letsencrypt.sh`
 
 This a hook for [letsencrypt.sh](https://github.com/lukas2511/letsencrypt.sh) (a [Let's Encrypt](https://letsencrypt.org/) ACME client) that allows you to use [CloudFlare](https://www.cloudflare.com/) DNS records to respond to `dns-01` challenges. Requires Python and your CloudFlare account e-mail and API key being in the environment.
 
