@@ -33,7 +33,7 @@ Optionally, you can specify the DNS servers to be used for propagation checking 
 $ export CF_DNS_SERVERS='8.8.8.8 8.8.4.4'
 ```
 
-Alternatively, these statements can be placed in `letsencrypt.sh\config.sh`, which is automatically sourced by `letsencrypt.sh` on startup:
+Alternatively, these statements can be placed in `letsencrypt.sh/config.sh`, which is automatically sourced by `letsencrypt.sh` on startup:
 
 ```
 echo "export CF_EMAIL='user@example.com'" >> config.sh
