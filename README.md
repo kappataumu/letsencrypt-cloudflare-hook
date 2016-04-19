@@ -2,7 +2,7 @@
 
 This a hook for [letsencrypt.sh](https://github.com/lukas2511/letsencrypt.sh) (a [Let's Encrypt](https://letsencrypt.org/) ACME client) that allows you to use [CloudFlare](https://www.cloudflare.com/) DNS records to respond to `dns-01` challenges. Requires Python and your CloudFlare account e-mail and API key being in the environment.
 
-## Setup
+## Installation
 
 ```
 $ git clone https://github.com/lukas2511/letsencrypt.sh
@@ -10,24 +10,38 @@ $ cd letsencrypt.sh
 $ mkdir hooks
 $ git clone https://github.com/kappataumu/letsencrypt-cloudflare-hook hooks/cloudflare
 $ pip install -r hooks/cloudflare/requirements.txt
-$ export CF_EMAIL='user@example.com'
-$ export CF_KEY='K9uX2HyUjeWg5AhAb'
 ```
-
-You can also specify one or more custom DNS servers for propagation checking, via the `CF_DNS_SERVERS` environment variable (props [bennettp123](https://github.com/bennettp123)):
-
-```
-export CF_DNS_SERVERS='8.8.8.8 8.8.4.4'
-```
-
-
-### A note for Python 2
-
-If using Python 2, you need to replace the requirements installation step with the one below. Check the [urllib3 documentation](http://urllib3.readthedocs.org/en/latest/security.html#installing-urllib3-with-sni-support-and-certificates) for other possible caveats.
+If using Python 2, replace the last step with the one below and check the [urllib3 documentation](http://urllib3.readthedocs.org/en/latest/security.html#installing-urllib3-with-sni-support-and-certificates) for other possible caveats.
 
 ```
 $ pip install -r hooks/cloudflare/requirements-python-2.txt
 ```
+
+
+## Configuration
+
+Your account's CloudFlare email and API key are expected to be in the environment, so make sure to:
+
+```
+$ export CF_EMAIL='user@example.com'
+$ export CF_KEY='K9uX2HyUjeWg5AhAb'
+```
+
+Optionally, you can specify the DNS servers to be used for propagation checking via the `CF_DNS_SERVERS` environment variable (props [bennettp123](https://github.com/bennettp123)):
+
+```
+$ export CF_DNS_SERVERS='8.8.8.8 8.8.4.4'
+```
+
+Alternatively, these statements can be placed in `letsencrypt.sh\config.sh`, which is automatically sourced by `letsencrypt.sh` on startup:
+
+```
+echo "export CF_EMAIL='user@example.com'" >> config.sh
+echo "export CF_KEY='K9uX2HyUjeWg5AhAb'" >> config.sh
+```
+
+
+
 
 ## Usage
 
