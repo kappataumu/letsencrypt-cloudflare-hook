@@ -50,6 +50,7 @@ try:
 except KeyError:
     dns_servers = False
 
+
 def _has_dns_propagated(name, token):
     txt_records = []
     try:
@@ -62,7 +63,7 @@ def _has_dns_propagated(name, token):
         for rdata in dns_response:
             for txt_record in rdata.strings:
                 txt_records.append(txt_record)
-    except dns.exception.DNSException as error:
+    except dns.exception.DNSException:
         return False
 
     for txt_record in txt_records:
@@ -116,7 +117,7 @@ def create_txt_record(args):
     logger.info(" + Settling down for 10s...")
     time.sleep(10)
 
-    while(_has_dns_propagated(name, token) == False):
+    while(_has_dns_propagated(name, token) is False):
         logger.info(" + DNS not propagated, waiting 30s...")
         time.sleep(30)
 
@@ -144,8 +145,10 @@ def deploy_cert(args):
     logger.info(' + ssl_certificate_key: {0}'.format(privkey_pem))
     return
 
+
 def unchanged_cert(args):
     return
+
 
 def main(argv):
     ops = {
