@@ -23,7 +23,12 @@ from tld import get_tld
 # Enable verified HTTPS requests on older Pythons
 # http://urllib3.readthedocs.org/en/latest/security.html
 if sys.version_info[0] == 2:
-    requests.packages.urllib3.contrib.pyopenssl.inject_into_urllib3()
+    try:
+        requests.packages.urllib3.contrib.pyopenssl.inject_into_urllib3()
+    except AttributeError:
+        # see https://github.com/certbot/certbot/issues/1883
+        import urllib3.contrib.pyopenssl
+        urllib3.contrib.pyopenssl.inject_into_urllib3()
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
