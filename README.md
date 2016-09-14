@@ -1,14 +1,14 @@
-# CloudFlare hook for `letsencrypt.sh`
+# CloudFlare hook for `dehydrated`
 
-This a hook for [letsencrypt.sh](https://github.com/lukas2511/letsencrypt.sh) (a [Let's Encrypt](https://letsencrypt.org/) ACME client) that allows you to use [CloudFlare](https://www.cloudflare.com/) DNS records to respond to `dns-01` challenges. Requires Python and your CloudFlare account e-mail and API key being in the environment.
+This a hook for [dehydrated](https://github.com/lukas2511/dehydrated) (a [Let's Encrypt](https://letsencrypt.org/) ACME client) that allows you to use [CloudFlare](https://www.cloudflare.com/) DNS records to respond to `dns-01` challenges. Requires Python and your CloudFlare account e-mail and API key being in the environment.
 
 ## Installation
 
 ```
-$ git clone https://github.com/lukas2511/letsencrypt.sh
-$ cd letsencrypt.sh
+$ git clone https://github.com/lukas2511/dehydrated
+$ cd dehydrated
 $ mkdir hooks
-$ git clone https://github.com/kappataumu/letsencrypt-cloudflare-hook hooks/cloudflare
+$ git clone https://github.com/Torkiliuz/dehydrated-cloudflare-hook hooks/cloudflare
 $ pip install -r hooks/cloudflare/requirements.txt
 ```
 If using Python 2, replace the last step with the one below and check the [urllib3 documentation](http://urllib3.readthedocs.org/en/latest/security.html#installing-urllib3-with-sni-support-and-certificates) for other possible caveats.
@@ -33,7 +33,7 @@ Optionally, you can specify the DNS servers to be used for propagation checking 
 $ export CF_DNS_SERVERS='8.8.8.8 8.8.4.4'
 ```
 
-Alternatively, these statements can be placed in `letsencrypt.sh/config.sh`, which is automatically sourced by `letsencrypt.sh` on startup:
+Alternatively, these statements can be placed in `dehydrated/config.sh`, which is automatically sourced by `dehydrated` on startup:
 
 ```
 echo "export CF_EMAIL='user@example.com'" >> config.sh
@@ -46,13 +46,13 @@ echo "export CF_KEY='K9uX2HyUjeWg5AhAb'" >> config.sh
 ## Usage
 
 ```
-$ ./letsencrypt.sh -c -d example.com -t dns-01 -k 'hooks/cloudflare/hook.py'
+$ ./dehydrated -c -d example.com -t dns-01 -k 'hooks/cloudflare/hook.py'
 #
 # !! WARNING !! No main config file found, using default config!
 #
 Processing example.com
  + Signing domains...
- + Creating new directory /home/user/letsencrypt.sh/certs/example.com ...
+ + Creating new directory /home/user/dehydrated/certs/example.com ...
  + Generating private key...
  + Generating signing request...
  + Requesting challenge for example.com...
@@ -67,10 +67,10 @@ Processing example.com
  + Done!
  + Creating fullchain.pem...
  + CloudFlare hook executing: deploy_cert
- + ssl_certificate: /home/user/letsencrypt.sh/certs/example.com/fullchain.pem
- + ssl_certificate_key: /home/user/letsencrypt.sh/certs/example.com/privkey.pem
+ + ssl_certificate: /home/user/dehydrated/certs/example.com/fullchain.pem
+ + ssl_certificate_key: /home/user/dehydrated/certs/example.com/privkey.pem
  + Done!
 ```
 
 ## Further reading
-If you want some prose to go with the code, check out my relevant blog post here: [From StartSSL to Let's Encrypt, using CloudFlare DNS](http://kappataumu.com/articles/letsencrypt-cloudflare-dns-01-hook.html).
+If you want some prose to go with the code, check out kappataumus relevant blog post here: [From StartSSL to Let's Encrypt, using CloudFlare DNS](http://kappataumu.com/articles/letsencrypt-cloudflare-dns-01-hook.html).
