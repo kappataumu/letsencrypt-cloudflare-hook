@@ -113,14 +113,6 @@ def create_txt_record(args):
     record_id = r.json()['result']['id']
     logger.debug("+ TXT record created, ID: {0}".format(record_id))
 
-    # give it 10 seconds to settle down and avoid nxdomain caching
-    logger.info(" + Settling down for 10s...")
-    time.sleep(10)
-
-    while(_has_dns_propagated(name, token) is False):
-        logger.info(" + DNS not propagated, waiting 30s...")
-        time.sleep(30)
-
 
 # https://api.cloudflare.com/#dns-records-for-a-zone-delete-dns-record
 def delete_txt_record(args):
@@ -150,10 +142,29 @@ def unchanged_cert(args):
     return
 
 
+def create_all_txt_records(args):
+    X = 3
+    for i in range(0, len(args), X):
+        create_txt_record(args[i:i+X])
+    # give it 10 seconds to settle down and avoid nxdomain caching
+    logger.info(" + Settling down for 10s...")
+    time.sleep(10)
+    for i in range(0, len(args), X):
+        domain, token = args[i], args[i+2]
+        name = "{0}.{1}".format('_acme-challenge', domain)
+        while(_has_dns_propagated(name, token) == False):
+            logger.info(" + DNS not propagated, waiting 30s...")
+            time.sleep(30)
+
+def delete_all_txt_records(args):
+    X = 3
+    for i in range(0, len(args), X):
+        delete_txt_record(args[i:i+X])
+
 def main(argv):
     ops = {
-        'deploy_challenge': create_txt_record,
-        'clean_challenge' : delete_txt_record,
+        'deploy_challenge': create_all_txt_records,
+        'clean_challenge' : delete_all_txt_records,
         'deploy_cert'     : deploy_cert,
         'unchanged_cert'  : unchanged_cert,
     }
