@@ -39,11 +39,11 @@ Optionally, you can specify the DNS servers to be used for propagation checking 
 $ export CF_DNS_SERVERS='8.8.8.8 8.8.4.4'
 ```
 
-Alternatively, these statements can be placed in `dehydrated/config.sh`, which is automatically sourced by `dehydrated` on startup:
+Alternatively, these statements can be placed in `dehydrated/config`, which is automatically sourced by `dehydrated` on startup:
 
 ```
-echo "export CF_EMAIL='user@example.com'" >> config.sh
-echo "export CF_KEY='K9uX2HyUjeWg5AhAb'" >> config.sh
+echo "export CF_EMAIL='user@example.com'" >> config
+echo "export CF_KEY='K9uX2HyUjeWg5AhAb'" >> config
 ```
 
 
