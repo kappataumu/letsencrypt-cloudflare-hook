@@ -1,6 +1,6 @@
 cffi==1.5.0
 cryptography==1.2.3
-dnspython==1.12.0
+dnspython==1.15.0
 enum34==1.1.2
 future==0.15.2
 idna==2.0
