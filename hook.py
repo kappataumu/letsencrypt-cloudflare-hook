@@ -118,7 +118,7 @@ def create_txt_record(args):
     r = requests.post(url, headers=CF_HEADERS, json=payload)
     r.raise_for_status()
     record_id = r.json()['result']['id']
-    logger.debug("+ TXT record created, ID: {0}".format(record_id))
+    logger.debug(" + TXT record created, ID: {0}".format(record_id))
 
 
 # https://api.cloudflare.com/#dns-records-for-a-zone-delete-dns-record
