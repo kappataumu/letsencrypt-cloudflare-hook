@@ -32,7 +32,11 @@ if sys.version_info[0] == 2:
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.INFO)
+
+if os.environ.get('CF_DEBUG'):
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
 
 try:
     CF_HEADERS = {
@@ -85,7 +89,7 @@ def _get_txt_record_id(zone_id, name, token):
     try:
         record_id = r.json()['result'][0]['id']
     except IndexError:
-        logger.info(" + Unable to locate record named {0}".format(name))
+        logger.debug(" + Unable to locate record named {0}".format(name))
         return
 
     return record_id

@@ -39,11 +39,18 @@ Optionally, you can specify the DNS servers to be used for propagation checking 
 $ export CF_DNS_SERVERS='8.8.8.8 8.8.4.4'
 ```
 
+If you want more information about what is going on while the hook is running:
+
+```
+$ export CF_DEBUG='true'
+```
+
 Alternatively, these statements can be placed in `dehydrated/config`, which is automatically sourced by `dehydrated` on startup:
 
 ```
-echo "export CF_EMAIL='user@example.com'" >> config
-echo "export CF_KEY='K9uX2HyUjeWg5AhAb'" >> config
+echo "export CF_EMAIL=user@example.com" >> config
+echo "export CF_KEY=K9uX2HyUjeWg5AhAb" >> config
+echo "export CF_DEBUG=true" >> config
 ```
 
 
