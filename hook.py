@@ -52,7 +52,6 @@ except KeyError:
 
 
 def _has_dns_propagated(name, token):
-    txt_records = []
     try:
         if dns_servers:
             custom_resolver = dns.resolver.Resolver()
@@ -60,17 +59,13 @@ def _has_dns_propagated(name, token):
             dns_response = custom_resolver.query(name, 'TXT')
         else:
             dns_response = dns.resolver.query(name, 'TXT')
+            
         for rdata in dns_response:
-            for txt_record in rdata.strings:
-                txt_records.append(txt_record.decode('utf-8'))
-    except dns.exception.DNSException:
-        return False
-
-    for txt_record in txt_records:
-        if txt_record == token:
-            return True
-
-    return False
+            if token in [b.decode('utf-8') for b in rdata.strings]:
+                return True
+                
+    except dns.exception.DNSException as e:
+        logger.debug(" + {0}. Retrying query...".format(e))
 
 
 # https://api.cloudflare.com/#zone-list-zones
