@@ -99,7 +99,7 @@ def _get_txt_record_id(zone_id, name, token):
 # https://api.cloudflare.com/#dns-records-for-a-zone-create-dns-record
 def create_txt_record(args):
     domain, token = args[0], args[2]
-    logger.debug(' + Creating TXT record: {} => {}'.format(domain, token))
+    logger.debug(' + Creating TXT record: {0} => {1}'.format(domain, token))
     zone_id = _get_zone_id(domain)
     name = "{0}.{1}".format('_acme-challenge', domain)
     
