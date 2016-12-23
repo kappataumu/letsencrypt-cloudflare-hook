@@ -146,6 +146,10 @@ def deploy_cert(args):
 
 def unchanged_cert(args):
     return
+    
+
+def invalid_challenge(args):
+    return
 
 
 def create_all_txt_records(args):
@@ -162,10 +166,12 @@ def create_all_txt_records(args):
             logger.info(" + DNS not propagated, waiting 30s...")
             time.sleep(30)
 
+
 def delete_all_txt_records(args):
     X = 3
     for i in range(0, len(args), X):
         delete_txt_record(args[i:i+X])
+
 
 def main(argv):
     ops = {
@@ -173,6 +179,7 @@ def main(argv):
         'clean_challenge' : delete_all_txt_records,
         'deploy_cert'     : deploy_cert,
         'unchanged_cert'  : unchanged_cert,
+        'invalid_challenge': invalid_challenge,
     }
     logger.info(" + CloudFlare hook executing: {0}".format(argv[0]))
     ops[argv[0]](argv[1:])
