@@ -70,6 +70,8 @@ def _has_dns_propagated(name, token):
                 
     except dns.exception.DNSException as e:
         logger.debug(" + {0}. Retrying query...".format(e))
+        
+    return False
 
 
 # https://api.cloudflare.com/#zone-list-zones
