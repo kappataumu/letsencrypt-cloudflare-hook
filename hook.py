@@ -182,6 +182,10 @@ def delete_all_txt_records(args):
         delete_txt_record(args[i:i+X])
 
 
+def exit_hook(args):
+    return
+
+
 def main(argv):
     ops = {
         'deploy_challenge': create_all_txt_records,
@@ -189,6 +193,7 @@ def main(argv):
         'deploy_cert'     : deploy_cert,
         'unchanged_cert'  : unchanged_cert,
         'invalid_challenge': invalid_challenge,
+        'exit_hook': exit_hook
     }
     logger.info(" + CloudFlare hook executing: {0}".format(argv[0]))
     ops[argv[0]](argv[1:])
