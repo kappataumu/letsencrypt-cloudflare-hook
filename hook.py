@@ -115,7 +115,7 @@ def create_txt_record(args):
         'type': 'TXT',
         'name': name,
         'content': token,
-        'ttl': 1,
+        'ttl': 120,
     }
     r = requests.post(url, headers=CF_HEADERS, json=payload)
     r.raise_for_status()
