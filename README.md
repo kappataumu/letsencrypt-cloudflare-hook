@@ -33,6 +33,14 @@ $ export CF_EMAIL='user@example.com'
 $ export CF_KEY='K9uX2HyUjeWg5AhAb'
 ```
 
+You can supply multiple account credentials by separating them with one or more spaces.  Accounts will be tried in the order given, until one is found that serves the relevant domain.
+Leading, trailing, and extra spaces are ignored, so you can vertically align credential pairs for easy reading:
+
+```
+$ export CF_EMAIL='user1@example.com    user2@somewhere.com'
+$ export CF_KEY='  K9uX2HyUjeWg5AhAtreb fdsfjhFdaKls45354kHJ9hsj'
+```
+
 Optionally, you can specify the DNS servers to be used for propagation checking via the `CF_DNS_SERVERS` environment variable (props [bennettp123](https://github.com/bennettp123)):
 
 ```
