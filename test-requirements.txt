@@ -1,0 +1,4 @@
+flake8
+mock>=2.0.0
+requests-mock>=1.4.0
+testtools>=2.3.0
