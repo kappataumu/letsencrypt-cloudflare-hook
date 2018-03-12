@@ -1,1 +1,3 @@
 /.python-version
+.tox/
+*.egg-info

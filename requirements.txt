@@ -1,5 +1,6 @@
 dnspython==1.15.0
 future==0.15.2
-requests==2.9.1
+pyOpenSSL>=17.5.0;python_version=='2.7'
+requests>=2.18.4
 six==1.10.0
 tld==0.7.6
