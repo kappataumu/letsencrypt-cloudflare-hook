@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 
 import logging
 import os
+import subprocess
 import sys
 import time
 
@@ -34,6 +35,7 @@ else:
     logger.setLevel(logging.INFO)
 
 CF_HEADERS = {}
+CF_DEPLOY_HOOK = os.environ.get('CF_DEPLOY_HOOK', None)
 DNS_SERVERS = False
 
 
@@ -130,8 +132,23 @@ def delete_txt_record(args):
 
 def deploy_cert(args):
     domain, privkey_pem, cert_pem, fullchain_pem, chain_pem, timestamp = args
+    # Convert all paths to absolute paths
+    privkey_pem = os.path.abspath(privkey_pem)
+    cert_pem = os.path.abspath(cert_pem)
+    fullchain_pem = os.path.abspath(fullchain_pem)
+    chain_pem = os.path.abspath(chain_pem)
+
     logger.debug(' + ssl_certificate: {0}'.format(fullchain_pem))
     logger.debug(' + ssl_certificate_key: {0}'.format(privkey_pem))
+
+    # Run our deploy hook script/program if we have one
+    if CF_DEPLOY_HOOK is not None:
+        cmd_line = [CF_DEPLOY_HOOK, domain, privkey_pem, cert_pem,
+                    fullchain_pem, chain_pem, timestamp]
+        logger.debug(' + Executing CF_DEPLOY_HOOK command: {}'.format(
+            ' '.join(cmd_line)))
+        # NOTE: We don't care if it succeeds or fails
+        subprocess.call(cmd_line)
     return
 
 

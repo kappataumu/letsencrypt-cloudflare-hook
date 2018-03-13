@@ -53,8 +53,30 @@ echo "export CF_KEY=K9uX2HyUjeWg5AhAb" >> config
 echo "export CF_DEBUG=true" >> config
 ```
 
+## Deploy hook
 
+If you would like a program to be called when a certificate is deployed you can do so by doing:
+```
+export CF_DEPLOY_HOOK='program_to_execute'
+```
 
+Alternatively, it can be placed in `dehydrated/config`, which is automatically sourced by `dehydrated` on startup:
+
+```
+echo "export CF_DEPLOY_HOOK=program_to_execute" >> config
+```
+
+The `CF_DEPLOY_HOOK` script/program will be called with the following arguments:
+    domain privkey_pem cert_pem fullchain_pem chain_pem timestamp
+
+* **domain**: The domain name of the certificate. For example: foo.example.come
+* **privkey_pem**: Location of the `privkey.pem` file.
+* **cert_pem**: Location of the `cert.pem` file.
+* **fullchain_pem**: Location of the `fullchain.pem` file.
+* **chain_pem**: Location of the `chain.pem` file.
+* **timestamp**: The timestamp of the certificate
+
+It is up to your script/program to take this information to deploy the certificate as needed.
 
 ## Usage
 
