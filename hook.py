@@ -5,19 +5,14 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from builtins import str
-
-from future import standard_library
-standard_library.install_aliases()
-
-import dns.exception
-import dns.resolver
 import logging
 import os
-import requests
 import sys
 import time
 
+import dns.exception
+import dns.resolver
+import requests
 from tld import get_tld
 
 # Enable verified HTTPS requests on older Pythons
@@ -41,7 +36,7 @@ else:
 try:
     CF_HEADERS = {
         'X-Auth-Email': os.environ['CF_EMAIL'],
-        'X-Auth-Key'  : os.environ['CF_KEY'],
+        'X-Auth-Key': os.environ['CF_KEY'],
         'Content-Type': 'application/json',
     }
 except KeyError:
@@ -85,7 +80,8 @@ def _get_zone_id(domain):
 
 # https://api.cloudflare.com/#dns-records-for-a-zone-dns-record-details
 def _get_txt_record_id(zone_id, name, token):
-    url = "https://api.cloudflare.com/client/v4/zones/{0}/dns_records?type=TXT&name={1}&content={2}".format(zone_id, name, token)
+    url = ("https://api.cloudflare.com/client/v4/zones/{0}/dns_records?"
+           "type=TXT&name={1}&content={2}".format(zone_id, name, token))
     r = requests.get(url, headers=CF_HEADERS)
     r.raise_for_status()
     try:
@@ -110,7 +106,8 @@ def create_txt_record(args):
         logger.debug(" + TXT record exists, skipping creation.")
         return
 
-    url = "https://api.cloudflare.com/client/v4/zones/{0}/dns_records".format(zone_id)
+    url = "https://api.cloudflare.com/client/v4/zones/{0}/dns_records".format(
+        zone_id)
     payload = {
         'type': 'TXT',
         'name': name,
@@ -135,7 +132,8 @@ def delete_txt_record(args):
     record_id = _get_txt_record_id(zone_id, name, token)
 
     if record_id:
-        url = "https://api.cloudflare.com/client/v4/zones/{0}/dns_records/{1}".format(zone_id, record_id)
+        url = ("https://api.cloudflare.com/client/v4/zones/{0}/"
+               "dns_records/{1}".format(zone_id, record_id))
         r = requests.delete(url, headers=CF_HEADERS)
         r.raise_for_status()
         logger.debug(" + Deleted TXT {0}, CFID {1}".format(name, record_id))
@@ -171,7 +169,7 @@ def create_all_txt_records(args):
     for i in range(0, len(args), X):
         domain, token = args[i], args[i+2]
         name = "{0}.{1}".format('_acme-challenge', domain)
-        while(_has_dns_propagated(name, token) == False):
+        while(not _has_dns_propagated(name, token)):
             logger.info(" + DNS not propagated, waiting 30s...")
             time.sleep(30)
 
@@ -181,8 +179,10 @@ def delete_all_txt_records(args):
     for i in range(0, len(args), X):
         delete_txt_record(args[i:i+X])
 
+
 def startup_hook(args):
     return
+
 
 def exit_hook(args):
     return
@@ -191,9 +191,9 @@ def exit_hook(args):
 def main(argv):
     ops = {
         'deploy_challenge': create_all_txt_records,
-        'clean_challenge' : delete_all_txt_records,
-        'deploy_cert'     : deploy_cert,
-        'unchanged_cert'  : unchanged_cert,
+        'clean_challenge': delete_all_txt_records,
+        'deploy_cert': deploy_cert,
+        'unchanged_cert': unchanged_cert,
         'invalid_challenge': invalid_challenge,
         'startup_hook': startup_hook,
         'exit_hook': exit_hook
@@ -201,6 +201,7 @@ def main(argv):
     if argv[0] in ops:
         logger.info(" + CloudFlare hook executing: {0}".format(argv[0]))
         ops[argv[0]](argv[1:])
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])
