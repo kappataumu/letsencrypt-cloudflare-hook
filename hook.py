@@ -5,19 +5,15 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from builtins import str
-
-from future import standard_library
-standard_library.install_aliases()
-
-import dns.exception
-import dns.resolver
 import logging
 import os
-import requests
+import subprocess
 import sys
 import time
 
+import dns.exception
+import dns.resolver
+import requests
 from tld import get_tld
 
 # Enable verified HTTPS requests on older Pythons
@@ -38,39 +34,27 @@ if os.environ.get('CF_DEBUG'):
 else:
     logger.setLevel(logging.INFO)
 
-try:
-    CF_HEADERS = {
-        'X-Auth-Email': os.environ['CF_EMAIL'],
-        'X-Auth-Key'  : os.environ['CF_KEY'],
-        'Content-Type': 'application/json',
-    }
-except KeyError:
-    logger.error(" + Unable to locate Cloudflare credentials in environment!")
-    sys.exit(1)
-
-try:
-    dns_servers = os.environ['CF_DNS_SERVERS']
-    dns_servers = dns_servers.split()
-except KeyError:
-    dns_servers = False
+CF_HEADERS = {}
+CF_DEPLOY_HOOK = os.environ.get('CF_DEPLOY_HOOK', None)
+DNS_SERVERS = False
 
 
 def _has_dns_propagated(name, token):
     try:
-        if dns_servers:
+        if DNS_SERVERS:
             custom_resolver = dns.resolver.Resolver()
-            custom_resolver.nameservers = dns_servers
+            custom_resolver.nameservers = DNS_SERVERS
             dns_response = custom_resolver.query(name, 'TXT')
         else:
             dns_response = dns.resolver.query(name, 'TXT')
-            
+
         for rdata in dns_response:
             if token in [b.decode('utf-8') for b in rdata.strings]:
                 return True
-                
+
     except dns.exception.DNSException as e:
         logger.debug(" + {0}. Retrying query...".format(e))
-        
+
     return False
 
 
@@ -85,7 +69,8 @@ def _get_zone_id(domain):
 
 # https://api.cloudflare.com/#dns-records-for-a-zone-dns-record-details
 def _get_txt_record_id(zone_id, name, token):
-    url = "https://api.cloudflare.com/client/v4/zones/{0}/dns_records?type=TXT&name={1}&content={2}".format(zone_id, name, token)
+    url = ("https://api.cloudflare.com/client/v4/zones/{0}/dns_records?"
+           "type=TXT&name={1}&content={2}".format(zone_id, name, token))
     r = requests.get(url, headers=CF_HEADERS)
     r.raise_for_status()
     try:
@@ -104,13 +89,14 @@ def create_txt_record(args):
     logger.debug(' + Challenge: {0}'.format(challenge))
     zone_id = _get_zone_id(domain)
     name = "{0}.{1}".format('_acme-challenge', domain)
-    
+
     record_id = _get_txt_record_id(zone_id, name, token)
     if record_id:
         logger.debug(" + TXT record exists, skipping creation.")
         return
-    
-    url = "https://api.cloudflare.com/client/v4/zones/{0}/dns_records".format(zone_id)
+
+    url = "https://api.cloudflare.com/client/v4/zones/{0}/dns_records".format(
+        zone_id)
     payload = {
         'type': 'TXT',
         'name': name,
@@ -135,7 +121,8 @@ def delete_txt_record(args):
     record_id = _get_txt_record_id(zone_id, name, token)
 
     if record_id:
-        url = "https://api.cloudflare.com/client/v4/zones/{0}/dns_records/{1}".format(zone_id, record_id)
+        url = ("https://api.cloudflare.com/client/v4/zones/{0}/"
+               "dns_records/{1}".format(zone_id, record_id))
         r = requests.delete(url, headers=CF_HEADERS)
         r.raise_for_status()
         logger.debug(" + Deleted TXT {0}, CFID {1}".format(name, record_id))
@@ -145,14 +132,29 @@ def delete_txt_record(args):
 
 def deploy_cert(args):
     domain, privkey_pem, cert_pem, fullchain_pem, chain_pem, timestamp = args
+    # Convert all paths to absolute paths
+    privkey_pem = os.path.abspath(privkey_pem)
+    cert_pem = os.path.abspath(cert_pem)
+    fullchain_pem = os.path.abspath(fullchain_pem)
+    chain_pem = os.path.abspath(chain_pem)
+
     logger.debug(' + ssl_certificate: {0}'.format(fullchain_pem))
     logger.debug(' + ssl_certificate_key: {0}'.format(privkey_pem))
+
+    # Run our deploy hook script/program if we have one
+    if CF_DEPLOY_HOOK is not None:
+        cmd_line = [CF_DEPLOY_HOOK, domain, privkey_pem, cert_pem,
+                    fullchain_pem, chain_pem, timestamp]
+        logger.debug(' + Executing CF_DEPLOY_HOOK command: {}'.format(
+            ' '.join(cmd_line)))
+        # NOTE: We don't care if it succeeds or fails
+        subprocess.call(cmd_line)
     return
 
 
 def unchanged_cert(args):
     return
-    
+
 
 def invalid_challenge(args):
     domain, result = args
@@ -171,7 +173,7 @@ def create_all_txt_records(args):
     for i in range(0, len(args), X):
         domain, token = args[i], args[i+2]
         name = "{0}.{1}".format('_acme-challenge', domain)
-        while(_has_dns_propagated(name, token) == False):
+        while(not _has_dns_propagated(name, token)):
             logger.info(" + DNS not propagated, waiting 30s...")
             time.sleep(30)
 
@@ -181,26 +183,59 @@ def delete_all_txt_records(args):
     for i in range(0, len(args), X):
         delete_txt_record(args[i:i+X])
 
+
 def startup_hook(args):
     return
+
 
 def exit_hook(args):
     return
 
 
+def initialize_environment():
+    """Validate and Initialize the environment"""
+    missing_vars = {'CF_EMAIL', 'CF_KEY'} - set(os.environ)
+    if missing_vars:
+        logger.critical(" + Unable to locate Cloudflare credentials in the "
+                        "environment!: {}".format(', '.join(missing_vars)))
+        sys.exit(1)
+
+    global CF_HEADERS
+    CF_HEADERS = {
+        'X-Auth-Email': os.environ['CF_EMAIL'],
+        'X-Auth-Key': os.environ['CF_KEY'],
+        'Content-Type': 'application/json',
+    }
+
+    if 'CF_DNS_SERVERS' in os.environ:
+        global DNS_SERVERS
+        DNS_SERVERS = os.environ['CF_DNS_SERVERS']
+        # NOTE: Currently only supports whitespace separated values. Maybe it
+        # should support comma separated values?
+        DNS_SERVERS = DNS_SERVERS.split()
+
+
 def main(argv):
+    initialize_environment()
+
     ops = {
         'deploy_challenge': create_all_txt_records,
-        'clean_challenge' : delete_all_txt_records,
-        'deploy_cert'     : deploy_cert,
-        'unchanged_cert'  : unchanged_cert,
+        'clean_challenge': delete_all_txt_records,
+        'deploy_cert': deploy_cert,
+        'unchanged_cert': unchanged_cert,
         'invalid_challenge': invalid_challenge,
         'startup_hook': startup_hook,
         'exit_hook': exit_hook
     }
-    if argv[0] in ops:
-        logger.info(" + CloudFlare hook executing: {0}".format(argv[0]))
-        ops[argv[0]](argv[1:])
+    hook_name = argv[0]
+    if hook_name not in ops:
+        # Ignore unknown hook methods
+        return
+
+    hook_function = ops[hook_name]
+    logger.info(" + CloudFlare hook executing: {0}".format(hook_name))
+    hook_function(argv[1:])
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])
