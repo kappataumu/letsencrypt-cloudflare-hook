@@ -33,28 +33,15 @@ if os.environ.get('CF_DEBUG'):
 else:
     logger.setLevel(logging.INFO)
 
-try:
-    CF_HEADERS = {
-        'X-Auth-Email': os.environ['CF_EMAIL'],
-        'X-Auth-Key': os.environ['CF_KEY'],
-        'Content-Type': 'application/json',
-    }
-except KeyError:
-    logger.error(" + Unable to locate Cloudflare credentials in environment!")
-    sys.exit(1)
-
-try:
-    dns_servers = os.environ['CF_DNS_SERVERS']
-    dns_servers = dns_servers.split()
-except KeyError:
-    dns_servers = False
+CF_HEADERS = {}
+DNS_SERVERS = False
 
 
 def _has_dns_propagated(name, token):
     try:
-        if dns_servers:
+        if DNS_SERVERS:
             custom_resolver = dns.resolver.Resolver()
-            custom_resolver.nameservers = dns_servers
+            custom_resolver.nameservers = DNS_SERVERS
             dns_response = custom_resolver.query(name, 'TXT')
         else:
             dns_response = dns.resolver.query(name, 'TXT')
@@ -188,7 +175,32 @@ def exit_hook(args):
     return
 
 
+def initialize_environment():
+    """Validate and Initialize the environment"""
+    missing_vars = {'CF_EMAIL', 'CF_KEY'} - set(os.environ)
+    if missing_vars:
+        logger.critical(" + Unable to locate Cloudflare credentials in the "
+                        "environment!: {}".format(', '.join(missing_vars)))
+        sys.exit(1)
+
+    global CF_HEADERS
+    CF_HEADERS = {
+        'X-Auth-Email': os.environ['CF_EMAIL'],
+        'X-Auth-Key': os.environ['CF_KEY'],
+        'Content-Type': 'application/json',
+    }
+
+    if 'CF_DNS_SERVERS' in os.environ:
+        global DNS_SERVERS
+        DNS_SERVERS = os.environ['CF_DNS_SERVERS']
+        # NOTE: Currently only supports whitespace separated values. Maybe it
+        # should support comma separated values?
+        DNS_SERVERS = DNS_SERVERS.split()
+
+
 def main(argv):
+    initialize_environment()
+
     ops = {
         'deploy_challenge': create_all_txt_records,
         'clean_challenge': delete_all_txt_records,
@@ -198,9 +210,14 @@ def main(argv):
         'startup_hook': startup_hook,
         'exit_hook': exit_hook
     }
-    if argv[0] in ops:
-        logger.info(" + CloudFlare hook executing: {0}".format(argv[0]))
-        ops[argv[0]](argv[1:])
+    hook_name = argv[0]
+    if hook_name not in ops:
+        # Ignore unknown hook methods
+        return
+
+    hook_function = ops[hook_name]
+    logger.info(" + CloudFlare hook executing: {0}".format(hook_name))
+    hook_function(argv[1:])
 
 
 if __name__ == '__main__':

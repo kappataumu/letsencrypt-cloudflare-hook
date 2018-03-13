@@ -13,11 +13,7 @@ import requests_mock
 from six.moves.urllib import parse as urlparse
 import testtools
 
-# Setup dummy environment variables so 'hook' can be imported
-os.environ['CF_EMAIL'] = "email@example'com"
-os.environ['CF_KEY'] = "a_cloudflare_example_key"
-
-import hook  # noqa
+import hook
 
 
 CF_API_HOST = "api.cloudflare.com"
@@ -34,6 +30,8 @@ class TestBase(testtools.TestCase):
             'X-Auth-Email': "email@example'com",
             'X-Auth-Key': 'a_cloudflare_example_key',
         }
+        os.environ['CF_EMAIL'] = "email@example'com"
+        os.environ['CF_KEY'] = "a_cloudflare_example_key"
 
 
 ExpectedRequestsData = collections.namedtuple(
