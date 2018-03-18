@@ -155,7 +155,7 @@ def unchanged_cert(args):
     
 
 def invalid_challenge(args):
-    domain, result = args
+    domain, result = args[0], " ".join(args[1:])
     logger.debug(' + invalid_challenge for {0}'.format(domain))
     logger.debug(' + Full error: {0}'.format(result))
     return
