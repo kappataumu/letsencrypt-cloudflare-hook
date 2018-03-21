@@ -39,6 +39,12 @@ Optionally, you can specify the DNS servers to be used for propagation checking 
 $ export CF_DNS_SERVERS='8.8.8.8 8.8.4.4'
 ```
 
+If you experience problems with DNS propagation, increasing the time (in seconds) this hooks waits for things to settle down after setting the DNS records, may help. The default is 10.
+
+```
+$ export CF_SETTLE_TIME='30'
+```
+
 If you want more information about what is going on while the hook is running:
 
 ```

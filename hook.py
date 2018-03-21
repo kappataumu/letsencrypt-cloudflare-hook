@@ -162,12 +162,13 @@ def invalid_challenge(args):
 
 
 def create_all_txt_records(args):
+    settle_time = int(os.environ.get('CF_SETTLE_TIME', '10'))
     X = 3
     for i in range(0, len(args), X):
         create_txt_record(args[i:i+X])
-    # give it 10 seconds to settle down and avoid nxdomain caching
-    logger.info(" + Settling down for 10s...")
-    time.sleep(10)
+    # give it some time (default: 10 seconds) to settle down and avoid nxdomain caching
+    logger.info(" + Settling down for {}s...".format(settle_time))
+    time.sleep(settle_time)
     for i in range(0, len(args), X):
         domain, token = args[i], args[i+2]
         name = "{0}.{1}".format('_acme-challenge', domain)
