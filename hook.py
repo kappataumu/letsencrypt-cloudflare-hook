@@ -39,11 +39,11 @@ else:
     logger.setLevel(logging.INFO)
 
 try:
-    CF_HEADERS = {
-        'X-Auth-Email': os.environ['CF_EMAIL'],
-        'X-Auth-Key'  : os.environ['CF_KEY'],
+    CF_HEADERS = [{
+        'X-Auth-Email': e,
+        'X-Auth-Key'  : k,
         'Content-Type': 'application/json',
-    }
+    } for e,k in zip(os.environ['CF_EMAIL'].split(), os.environ['CF_KEY'].split()) ]
 except KeyError:
     logger.error(" + Unable to locate Cloudflare credentials in environment!")
     sys.exit(1)
@@ -78,15 +78,19 @@ def _has_dns_propagated(name, token):
 def _get_zone_id(domain):
     tld = get_tld('http://' + domain)
     url = "https://api.cloudflare.com/client/v4/zones?name={0}".format(tld)
-    r = requests.get(url, headers=CF_HEADERS)
-    r.raise_for_status()
-    return r.json()['result'][0]['id']
-
+    for auth in CF_HEADERS:
+        r = requests.get(url, headers=auth)
+        r.raise_for_status()
+        r = r.json().get('result',())
+        if r:
+            return auth, r[0]['id']
+    logger.error(" + Domain {0} not found in any Cloudflare account".format(tld))
+    sys.exit(1)
 
 # https://api.cloudflare.com/#dns-records-for-a-zone-dns-record-details
-def _get_txt_record_id(zone_id, name, token):
+def _get_txt_record_id(auth, zone_id, name, token):
     url = "https://api.cloudflare.com/client/v4/zones/{0}/dns_records?type=TXT&name={1}&content={2}".format(zone_id, name, token)
-    r = requests.get(url, headers=CF_HEADERS)
+    r = requests.get(url, headers=auth)
     r.raise_for_status()
     try:
         record_id = r.json()['result'][0]['id']
@@ -102,10 +106,10 @@ def create_txt_record(args):
     domain, challenge, token = args
     logger.debug(' + Creating TXT record: {0} => {1}'.format(domain, token))
     logger.debug(' + Challenge: {0}'.format(challenge))
-    zone_id = _get_zone_id(domain)
+    auth, zone_id = _get_zone_id(domain)
     name = "{0}.{1}".format('_acme-challenge', domain)
     
-    record_id = _get_txt_record_id(zone_id, name, token)
+    record_id = _get_txt_record_id(auth, zone_id, name, token)
     if record_id:
         logger.debug(" + TXT record exists, skipping creation.")
         return
@@ -117,7 +121,7 @@ def create_txt_record(args):
         'content': token,
         'ttl': 120,
     }
-    r = requests.post(url, headers=CF_HEADERS, json=payload)
+    r = requests.post(url, headers=auth, json=payload)
     r.raise_for_status()
     record_id = r.json()['result']['id']
     logger.debug(" + TXT record created, CFID: {0}".format(record_id))
@@ -130,13 +134,13 @@ def delete_txt_record(args):
         logger.info(" + http_request() error in letsencrypt.sh?")
         return
 
-    zone_id = _get_zone_id(domain)
+    auth, zone_id = _get_zone_id(domain)
     name = "{0}.{1}".format('_acme-challenge', domain)
-    record_id = _get_txt_record_id(zone_id, name, token)
+    record_id = _get_txt_record_id(auth, zone_id, name, token)
 
     if record_id:
         url = "https://api.cloudflare.com/client/v4/zones/{0}/dns_records/{1}".format(zone_id, record_id)
-        r = requests.delete(url, headers=CF_HEADERS)
+        r = requests.delete(url, headers=auth)
         r.raise_for_status()
         logger.debug(" + Deleted TXT {0}, CFID {1}".format(name, record_id))
     else:
