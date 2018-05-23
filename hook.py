@@ -202,9 +202,9 @@ def main(argv):
         'startup_hook': startup_hook,
         'exit_hook': exit_hook
     }
-    logger.info(" + CloudFlare hook executing: {0}".format(argv[0]))
-    ops[argv[0]](argv[1:])
-
+    if argv[0] in ops:
+        logger.info(" + CloudFlare hook executing: {0}".format(argv[0]))
+        ops[argv[0]](argv[1:])
 
 if __name__ == '__main__':
     main(sys.argv[1:])
