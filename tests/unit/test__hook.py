@@ -81,7 +81,7 @@ class TestRequestCallers(TestBase):
         ]
         mock_request.get(self.matcher, text=ZONE_RESPONSE)
 
-        result = hook._get_zone_id("example.com")
+        auth, result = hook._get_zone_id("example.com")
 
         expected_id = "023e105f4ecef8ad9ca31a8372d0c353"
         self.assertEqual(expected_id, result)
@@ -101,7 +101,7 @@ class TestRequestCallers(TestBase):
         ]
         mock_request.get(self.matcher, text=DNS_RECORDS_RESPONSE)
 
-        result = hook._get_txt_record_id("ZONE_ID", "example.com", "TOKEN")
+        result = hook._get_txt_record_id({}, "ZONE_ID", "example.com", "TOKEN")
 
         expected_id = "372e67954025e0ba6aaa6d586b9e0b59"
         self.assertEqual(expected_id, result)
@@ -121,16 +121,16 @@ class TestRequestCallers(TestBase):
         ]
         mock_request.get(self.matcher, text=DNS_RECORDS_RESPONSE_NOT_FOUND)
 
-        result = hook._get_txt_record_id("ZONE_ID", "example.com", "TOKEN")
+        result = hook._get_txt_record_id({}, "ZONE_ID", "example.com", "TOKEN")
 
         self.assertEqual(None, result)
         self._validate_requests_calls(mock_request=mock_request,
                                       expected_data_list=expected_list)
 
     @mock.patch.object(hook, '_get_txt_record_id',
-                       lambda zone_id, name, token: None)
+                       lambda auth, zone_id, name, token: None)
     @mock.patch.object(hook, '_get_txt_record_id',
-                       lambda zone_id, name, token: None)
+                       lambda auth, zone_id, name, token: None)
     def test_create_txt_record(self, mock_request):
         expected_list = [
             ExpectedRequestsData(
