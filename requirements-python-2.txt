@@ -6,7 +6,7 @@ future==0.17.1
 idna==2.8
 ipaddress==1.0.22
 ndg-httpsclient==0.5.1
-pyasn1==0.4.5
+pyasn1==0.4.6
 pycparser==2.19
 pyOpenSSL==19.0.0
 requests==2.22.0
