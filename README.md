@@ -20,7 +20,7 @@ $ pip install -r hooks/cloudflare/requirements.txt
 Otherwise, if you are using Python 2 (make sure to also check the [urllib3 documentation](http://urllib3.readthedocs.org/en/latest/security.html#installing-urllib3-with-sni-support-and-certificates) for possible caveats):
 
 ```
-$ pip install -r hooks/cloudflare/requirements-python-2.txt
+$ pip install -r hooks/cloudflare/requirements-python-2.txt --user
 ```
 
 
