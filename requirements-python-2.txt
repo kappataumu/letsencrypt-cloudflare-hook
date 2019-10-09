@@ -8,8 +8,8 @@ ipaddress==1.0.16
 ndg-httpsclient==0.4.0
 pyasn1==0.1.9
 pycparser==2.14
-pyOpenSSL==0.15.1
-requests==2.9.1
+pyOpenSSL==17.5.0
+requests==2.20.0
 six==1.10.0
 tld==0.7.6
 wheel==0.28.0
