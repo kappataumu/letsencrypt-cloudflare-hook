@@ -13,8 +13,8 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'letsencrypt-cloudflare-hook'
-DESCRIPTION = 'My short description for my project.'
-URL = 'https://github.com/kappataumu/letsencrypt-cloudflare-hook'
+DESCRIPTION = 'Letsencrypt Cloudflare Hook for Dehydrated'
+URL = 'https://github.com/SeattleDevs/letsencrypt-cloudflare-hook'
 EMAIL = None
 AUTHOR = 'kappataumu'
 REQUIRES_PYTHON = '>=2.7.0'
