@@ -1,4 +1,4 @@
-cffi==1.12.3
+cffi==1.13.0
 cryptography==2.7
 dnspython==1.16.0
 enum34==1.1.6
