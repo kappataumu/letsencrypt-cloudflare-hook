@@ -31,7 +31,7 @@ if sys.version_info[0] == 2:
         urllib3.contrib.pyopenssl.inject_into_urllib3()
 
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.StreamHandler())
+logger.addHandler(logging.StreamHandler(sys.stdout))
 
 if os.environ.get('CF_DEBUG'):
     logger.setLevel(logging.DEBUG)
