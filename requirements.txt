@@ -2,4 +2,4 @@ dnspython==1.16.0
 future==0.18.2
 requests==2.23.0
 six==1.14.0
-tld==0.11.10
+tld==0.11.11
