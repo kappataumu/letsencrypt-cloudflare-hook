@@ -99,5 +99,26 @@ Processing example.com
  + Done!
 ```
 
+
+## virtualenv support
+Use the following commands to set up the environment and install the related dependencies:
+```
+$ python3 -m venv env # Only first time
+$ source env/bin/activate
+$ (env) pip install -r hooks/cloudflare/requirements.txt
+```
+
+Install the latest version of tox using pip
+```
+$ (env) pip install tox
+```
+
+
+Use the following command to execute the script in the virtualenv:
+```
+$ (env) ./dehydrated -c -d example.com -t dns-01 -k 'hooks/cloudflare/hook.py'
+```
+
+
 ## Further reading
 If you want some prose to go with the code, check out the relevant blog post here: [From StartSSL to Let's Encrypt, using CloudFlare DNS](http://kappataumu.com/articles/letsencrypt-cloudflare-dns-01-hook.html).
