@@ -2,6 +2,14 @@
 
 This is a hook for the [Let's Encrypt](https://letsencrypt.org/) ACME client [dehydrated](https://github.com/lukas2511/dehydrated) (previously known as `letsencrypt.sh`) that allows you to use [CloudFlare](https://www.cloudflare.com/) DNS records to respond to `dns-01` challenges. Requires Python and your CloudFlare account e-mail and API key being in the environment.
 
+## WSL, Ubuntu, and potentially Debian prerequisites
+You may need to install the following two packages in addition to Python 3:
+
+```
+sudo apt install python3-pip python-is-python3
+```
+
+
 ## Installation
 
 ```
@@ -12,15 +20,9 @@ $ mkdir hooks
 $ git clone https://github.com/SeattleDevs/letsencrypt-cloudflare-hook hooks/cloudflare
 ```
 
-If you are using Python 3:
+Using Python 3:
 ```
-$ pip install -r hooks/cloudflare/requirements.txt
-```
-
-Otherwise, if you are using Python 2 (make sure to also check the [urllib3 documentation](http://urllib3.readthedocs.org/en/latest/security.html#installing-urllib3-with-sni-support-and-certificates) for possible caveats):
-
-```
-$ pip install -r hooks/cloudflare/requirements-python-2.txt --user
+$ pip3 install -r hooks/cloudflare/requirements.txt
 ```
 
 
@@ -66,8 +68,6 @@ echo "export CF_EMAIL=user@example.com" >> config
 echo "export CF_KEY=K9uX2HyUjeWg5AhAb" >> config
 echo "export CF_DEBUG=true" >> config
 ```
-
-
 
 
 ## Usage
