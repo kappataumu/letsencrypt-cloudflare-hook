@@ -54,6 +54,18 @@ try:
 except KeyError:
     dns_servers = False
 
+def _get_cname(name):
+    if dns_servers:
+        resolver = dns.resolver.Resolver()
+        resolver.nameservers = dns_servers
+    else:
+        resolver = dns.resolver
+
+    try:
+        dns_response = resolver.query(name, 'CNAME')
+        return list(dns_response)[0].to_text()
+    except dns.exception.DNSException:
+        return None
 
 def _has_dns_propagated(name, token):
     try:
@@ -102,9 +114,14 @@ def create_txt_record(args):
     domain, challenge, token = args
     logger.debug(' + Creating TXT record: {0} => {1}'.format(domain, token))
     logger.debug(' + Challenge: {0}'.format(challenge))
-    zone_id = _get_zone_id(domain)
+
     name = "{0}.{1}".format('_acme-challenge', domain)
-    
+    cnamed = _get_cname(name)
+    if cnamed is not None:
+        domain = cnamed
+        name = cnamed
+
+    zone_id = _get_zone_id(domain)
     record_id = _get_txt_record_id(zone_id, name, token)
     if record_id:
         logger.debug(" + TXT record exists, skipping creation.")
@@ -130,8 +147,13 @@ def delete_txt_record(args):
         logger.info(" + http_request() error in letsencrypt.sh?")
         return
 
-    zone_id = _get_zone_id(domain)
     name = "{0}.{1}".format('_acme-challenge', domain)
+    cnamed = _get_cname(name)
+    if cnamed is not None:
+        domain = cnamed
+        name = cnamed
+
+    zone_id = _get_zone_id(domain)
     record_id = _get_txt_record_id(zone_id, name, token)
 
     if record_id:
